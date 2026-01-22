@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, Minus, Plus, Truck, RotateCcw, Shield } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -24,7 +24,12 @@ const ProductDetail = () => {
   const { addItem } = useCart();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [mainImageLoaded, setMainImageLoaded] = useState(false);
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    setMainImageLoaded(false);
+  }, [currentImageIndex]);
 
   if (!product) {
     return (
@@ -65,12 +70,23 @@ const ProductDetail = () => {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             {/* Images */}
             <div className="space-y-4">
-              <div className="aspect-product bg-muted overflow-hidden">
+              <div className="aspect-product bg-muted overflow-hidden relative">
+                {!mainImageLoaded && (
+                  <motion.div
+                    className="absolute inset-0 skeleton-shimmer"
+                    initial={{ opacity: 1 }}
+                    animate={{ opacity: 1 }}
+                  />
+                )}
                 {reduceMotion ? (
                   <img
                     src={product.images[currentImageIndex]}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className={cn(
+                      "w-full h-full object-cover transition-opacity duration-500",
+                      mainImageLoaded ? "opacity-100" : "opacity-0"
+                    )}
+                    onLoad={() => setMainImageLoaded(true)}
                   />
                 ) : (
                   <AnimatePresence mode="wait" initial={false}>
@@ -79,10 +95,11 @@ const ProductDetail = () => {
                       src={product.images[currentImageIndex]}
                       alt={product.name}
                       className="w-full h-full object-cover"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
+                      initial={{ opacity: 0, scale: 1.01 }}
+                      animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      onLoad={() => setMainImageLoaded(true)}
                     />
                   </AnimatePresence>
                 )}

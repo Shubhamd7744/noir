@@ -64,15 +64,38 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           />
         </motion.button>
 
-        <img
-          src={product.images[0]}
-          alt={product.name}
-          className={cn(
-            "w-full h-full object-cover transition-all duration-500",
-            imageLoaded ? "opacity-100" : "opacity-0"
-          )}
-          onLoad={() => setImageLoaded(true)}
-        />
+        {/* Skeleton */}
+        {!imageLoaded && (
+          <motion.div
+            className="absolute inset-0 skeleton-shimmer"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+          />
+        )}
+
+        {reduceMotion ? (
+          <img
+            src={product.images[0]}
+            alt={product.name}
+            className={cn(
+              "w-full h-full object-cover transition-opacity duration-500",
+              imageLoaded ? "opacity-100" : "opacity-0"
+            )}
+            onLoad={() => setImageLoaded(true)}
+            loading="lazy"
+          />
+        ) : (
+          <motion.img
+            src={product.images[0]}
+            alt={product.name}
+            className="w-full h-full object-cover"
+            initial={{ opacity: 0, scale: 1.01 }}
+            animate={{ opacity: imageLoaded ? 1 : 0, scale: imageLoaded ? 1 : 1.01 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            onLoad={() => setImageLoaded(true)}
+            loading="lazy"
+          />
+        )}
         
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1">
