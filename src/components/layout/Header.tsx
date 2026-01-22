@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
-import { Menu, Search, ShoppingBag, X, User } from "lucide-react";
+import { Heart, Menu, Search, ShoppingBag, X, User } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { cn } from "@/lib/utils";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { totalItems, openCart } = useCart();
+  const { total: wishlistTotal } = useWishlist();
 
   return (
     <>
@@ -53,6 +55,18 @@ const Header = () => {
             <button className="p-2" aria-label="Search">
               <Search className="w-5 h-5" />
             </button>
+            <Link
+              to="/wishlist"
+              className="p-2 relative"
+              aria-label="Wishlist"
+            >
+              <Heart className="w-5 h-5" />
+              {wishlistTotal > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-foreground text-background text-[10px] font-medium flex items-center justify-center">
+                  {wishlistTotal}
+                </span>
+              )}
+            </Link>
             <button className="hidden md:block p-2" aria-label="Account">
               <User className="w-5 h-5" />
             </button>
@@ -112,6 +126,14 @@ const Header = () => {
             All Products
           </Link>
           <div className="h-px bg-border my-4" />
+          <Link
+            to="/wishlist"
+            className="text-2xl font-medium"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Wishlist
+          </Link>
+          <div className="h-px bg-border" />
           <Link
             to="/account"
             className="text-lg text-muted-foreground"
