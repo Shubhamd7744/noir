@@ -8,6 +8,7 @@ import ProductCard from "@/components/product/ProductCard";
 import { Button } from "@/components/ui/button";
 import { products } from "@/data/products";
 import { cn } from "@/lib/utils";
+import PageTransition from "@/components/motion/PageTransition";
 
 const categories = ["All", "Tops", "Bottoms", "Outerwear", "Footwear"];
 const colors = ["All", "Black", "Cream", "Olive", "White"];
@@ -81,7 +82,7 @@ const Shop = () => {
     showTrending;
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageTransition className="min-h-screen bg-background">
       <Header />
       <CartDrawer />
 
@@ -222,7 +223,7 @@ const Shop = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageTransition>
   );
 };
 

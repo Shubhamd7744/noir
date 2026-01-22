@@ -4,6 +4,7 @@ import { ChevronLeft, Lock, Truck, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { cn } from "@/lib/utils";
+import PageTransition from "@/components/motion/PageTransition";
 
 type CheckoutStep = "contact" | "shipping" | "payment" | "review";
 
@@ -52,17 +53,17 @@ const Checkout = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
+      <PageTransition className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
         <p className="text-muted-foreground">Your bag is empty</p>
         <Button variant="outline" asChild>
           <Link to="/shop">Continue Shopping</Link>
         </Button>
-      </div>
+      </PageTransition>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageTransition className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border">
         <div className="container flex items-center justify-between h-14">
@@ -365,7 +366,7 @@ const Checkout = () => {
           </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 

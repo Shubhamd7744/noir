@@ -15,6 +15,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import PageTransition from "@/components/motion/PageTransition";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -25,9 +26,9 @@ const ProductDetail = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <PageTransition className="min-h-screen flex items-center justify-center">
         <p>Product not found</p>
-      </div>
+      </PageTransition>
     );
   }
 
@@ -42,7 +43,7 @@ const ProductDetail = () => {
     .slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-background">
+    <PageTransition className="min-h-screen bg-background">
       <Header />
       <CartDrawer />
 
@@ -243,7 +244,7 @@ const ProductDetail = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageTransition>
   );
 };
 
