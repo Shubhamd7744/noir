@@ -4,16 +4,17 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import HeroSection from "@/components/home/HeroSection";
 import ProductGrid from "@/components/home/ProductGrid";
 import CategorySection from "@/components/home/CategorySection";
+import PageTransition from "@/components/motion/PageTransition";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <PageTransition className="min-h-screen bg-background">
       <Header />
       <CartDrawer />
-      
+
       <main>
         <HeroSection />
-        
+
         <ProductGrid
           title="New Arrivals"
           subtitle="Just Dropped"
@@ -42,7 +43,8 @@ const Index = () => {
               More intention.
             </h2>
             <p className="text-body-lg text-muted-foreground mt-4">
-              Every piece is designed to work harder, last longer, and look better with age. No fast fashion, no disposable trends.
+              Every piece is designed to work harder, last longer, and look better
+              with age. No fast fashion, no disposable trends.
             </p>
           </div>
         </section>
@@ -57,7 +59,7 @@ const Index = () => {
       </main>
 
       <Footer />
-    </div>
+    </PageTransition>
   );
 };
 
