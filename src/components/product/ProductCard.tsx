@@ -3,6 +3,8 @@ import { Product } from "@/types/product";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { motion, useReducedMotion } from "framer-motion";
+import { Heart } from "lucide-react";
+import { useWishlist } from "@/context/WishlistContext";
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +14,9 @@ interface ProductCardProps {
 const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const reduceMotion = useReducedMotion();
+  const { isWishlisted, toggle } = useWishlist();
+
+  const wishlisted = isWishlisted(product.id);
 
   const itemVariants = {
     hidden: { opacity: 0, y: 12 },
@@ -35,6 +40,30 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
       whileTap={reduceMotion ? undefined : { scale: 0.99 }}
     >
       <div className="product-image-hover aspect-product bg-muted relative overflow-hidden">
+        {/* Wishlist toggle */}
+        <motion.button
+          type="button"
+          aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggle(product.id);
+          }}
+          className={cn(
+            "absolute top-3 right-3 z-20 p-2 border border-border bg-background/80 backdrop-blur-sm transition-colors",
+            "hover:bg-background"
+          )}
+          whileHover={reduceMotion ? undefined : { scale: 1.06 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.96 }}
+        >
+          <Heart
+            className={cn(
+              "w-4 h-4 text-foreground",
+              wishlisted && "fill-current"
+            )}
+          />
+        </motion.button>
+
         <img
           src={product.images[0]}
           alt={product.name}
