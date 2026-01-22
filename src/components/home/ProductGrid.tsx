@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import ProductCard from "@/components/product/ProductCard";
 import { products } from "@/data/products";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface ProductGridProps {
   title: string;
@@ -20,6 +21,8 @@ const ProductGrid = ({
   showViewAll = true,
   viewAllLink = "/shop",
 }: ProductGridProps) => {
+  const reduceMotion = useReducedMotion();
+
   const filteredProducts = products
     .filter((p) => {
       if (filter === "new") return p.isNew;
@@ -27,6 +30,14 @@ const ProductGrid = ({
       return true;
     })
     .slice(0, limit);
+
+  const containerVariants = {
+    hidden: { opacity: 1 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.06, delayChildren: 0.04 },
+    },
+  } as const;
 
   return (
     <section className="container py-12 md:py-20">
@@ -48,11 +59,25 @@ const ProductGrid = ({
         )}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-        {filteredProducts.map((product, index) => (
-          <ProductCard key={product.id} product={product} index={index} />
-        ))}
-      </div>
+      {reduceMotion ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {filteredProducts.map((product, index) => (
+            <ProductCard key={product.id} product={product} index={index} />
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {filteredProducts.map((product, index) => (
+            <ProductCard key={product.id} product={product} index={index} />
+          ))}
+        </motion.div>
+      )}
     </section>
   );
 };

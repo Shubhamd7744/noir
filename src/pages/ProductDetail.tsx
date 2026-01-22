@@ -16,6 +16,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import PageTransition from "@/components/motion/PageTransition";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -23,6 +24,7 @@ const ProductDetail = () => {
   const { addItem } = useCart();
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const reduceMotion = useReducedMotion();
 
   if (!product) {
     return (
@@ -64,16 +66,31 @@ const ProductDetail = () => {
             {/* Images */}
             <div className="space-y-4">
               <div className="aspect-product bg-muted overflow-hidden">
-                <img
-                  src={product.images[currentImageIndex]}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
+                {reduceMotion ? (
+                  <img
+                    src={product.images[currentImageIndex]}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.img
+                      key={product.images[currentImageIndex]}
+                      src={product.images[currentImageIndex]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    />
+                  </AnimatePresence>
+                )}
               </div>
               {product.images.length > 1 && (
                 <div className="flex gap-2">
                   {product.images.map((img, idx) => (
-                    <button
+                    <motion.button
                       key={idx}
                       onClick={() => setCurrentImageIndex(idx)}
                       className={cn(
@@ -82,13 +99,15 @@ const ProductDetail = () => {
                           ? "border-foreground"
                           : "border-transparent"
                       )}
+                      whileHover={reduceMotion ? undefined : { scale: 1.03 }}
+                      whileTap={reduceMotion ? undefined : { scale: 0.98 }}
                     >
                       <img
                         src={img}
                         alt=""
                         className="w-full h-full object-cover"
                       />
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               )}
@@ -131,7 +150,7 @@ const ProductDetail = () => {
                   </div>
                   <div className="grid grid-cols-5 gap-2">
                     {product.sizes.map((size) => (
-                      <button
+                      <motion.button
                         key={size.name}
                         onClick={() => size.inStock && setSelectedSize(size.name)}
                         disabled={!size.inStock}
@@ -140,9 +159,19 @@ const ProductDetail = () => {
                           selectedSize === size.name && "selected",
                           !size.inStock && "out-of-stock"
                         )}
+                        whileHover={
+                          reduceMotion || !size.inStock
+                            ? undefined
+                            : { scale: 1.03, y: -1 }
+                        }
+                        whileTap={
+                          reduceMotion || !size.inStock
+                            ? undefined
+                            : { scale: 0.98 }
+                        }
                       >
                         {size.name}
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                   {product.mostBoughtSize && (

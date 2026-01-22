@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Product } from "@/types/product";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface ProductCardProps {
   product: Product;
@@ -10,12 +11,28 @@ interface ProductCardProps {
 
 const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const reduceMotion = useReducedMotion();
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+    },
+  } as const;
+
+  const MotionLink = motion(Link);
 
   return (
-    <Link
+    <MotionLink
       to={`/product/${product.id}`}
       className="group block"
-      style={{ animationDelay: `${index * 0.1}s` }}
+      variants={reduceMotion ? undefined : itemVariants}
+      initial={reduceMotion ? undefined : "hidden"}
+      animate={reduceMotion ? undefined : "visible"}
+      whileHover={reduceMotion ? undefined : { y: -2 }}
+      whileTap={reduceMotion ? undefined : { scale: 0.99 }}
     >
       <div className="product-image-hover aspect-product bg-muted relative overflow-hidden">
         <img
@@ -63,7 +80,7 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           <p className="scarcity-badge">Only {product.stock} left</p>
         )}
       </div>
-    </Link>
+    </MotionLink>
   );
 };
 
