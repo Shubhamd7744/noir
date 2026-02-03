@@ -2,10 +2,8 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import heroKhadi from "@/assets/hero-khadi.jpg";
-
 const HeroSection = () => {
-  return (
-    <section className="relative min-h-[85vh] flex items-center bg-khadi">
+  return <section className="relative min-h-[85vh] flex items-center bg-khadi">
       <div className="container">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center py-20 lg:py-0">
           {/* Content */}
@@ -27,12 +25,7 @@ const HeroSection = () => {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-sm"
-                asChild
-              >
+              <Button variant="outline" size="lg" className="rounded-sm" asChild>
                 <Link to="/about">Our Story</Link>
               </Button>
             </div>
@@ -56,16 +49,10 @@ const HeroSection = () => {
 
           {/* Image */}
           <div className="order-1 lg:order-2 aspect-[3/4] max-h-[70vh] overflow-hidden">
-            <img
-              src={heroKhadi}
-              alt="Model wearing premium khadi clothing"
-              className="w-full h-full object-cover"
-            />
+            <img src={heroKhadi} alt="Model wearing premium khadi clothing" className="w-full h-full object-cover rounded-2xl" />
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default HeroSection;
