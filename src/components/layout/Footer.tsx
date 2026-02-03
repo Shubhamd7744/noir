@@ -80,8 +80,8 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
-            <span className="font-display text-xl font-medium tracking-tight">सूत</span>
-            <span className="text-xs text-muted-foreground">Khadi Essentials</span>
+            <span className="font-display text-xl font-medium tracking-tight">Ecoweft</span>
+            <span className="text-xs text-muted-foreground">Sustainable Khadi</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <Link to="/privacy" className="hover:text-foreground transition-colors">
@@ -90,7 +90,7 @@ const Footer = () => {
             <Link to="/terms" className="hover:text-foreground transition-colors">
               Terms
             </Link>
-            <span>© 2024 सूत. All rights reserved.</span>
+            <span>© 2025 Ecoweft. All rights reserved.</span>
           </div>
         </div>
       </div>
