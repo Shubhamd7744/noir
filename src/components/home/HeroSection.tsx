@@ -1,48 +1,66 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-import heroDrop from "@/assets/hero-drop.jpg";
+import heroKhadi from "@/assets/hero-khadi.jpg";
 
 const HeroSection = () => {
   return (
-    <section className="relative h-screen min-h-[600px] max-h-[900px] flex items-end">
-      {/* Background image */}
-      <div className="absolute inset-0">
-        <img
-          src={heroDrop}
-          alt="Drop 001 Collection"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-foreground/20 to-transparent" />
-      </div>
+    <section className="relative min-h-[85vh] flex items-center bg-khadi">
+      <div className="container">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center py-20 lg:py-0">
+          {/* Content */}
+          <div className="order-2 lg:order-1 stagger-children">
+            <span className="text-micro text-sage tracking-[0.2em]">Sustainable Essentials</span>
+            <h1 className="font-display text-display-xl mt-4">
+              Woven with
+              <br />
+              <span className="italic">intention</span>
+            </h1>
+            <p className="text-body-lg text-muted-foreground mt-6 max-w-md leading-relaxed">
+              Premium khadi fabric meets modern design. Handcrafted essentials 
+              that feel as good as they look—built for comfort, made to last.
+            </p>
+            <div className="flex flex-wrap gap-4 mt-10">
+              <Button variant="default" size="lg" asChild className="rounded-sm">
+                <Link to="/shop">
+                  Shop Collection
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-sm"
+                asChild
+              >
+                <Link to="/about">Our Story</Link>
+              </Button>
+            </div>
+            
+            {/* Trust badges */}
+            <div className="flex flex-wrap gap-6 mt-12 pt-8 border-t border-border">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-sage" />
+                100% Natural Khadi
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-sage" />
+                Ethically Made
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-sage" />
+                Free Returns
+              </div>
+            </div>
+          </div>
 
-      {/* Content */}
-      <div className="container relative z-10 pb-16 md:pb-24">
-        <div className="max-w-xl stagger-children">
-          <span className="text-micro text-background/80">Drop 001</span>
-          <h1 className="text-display-xl text-background mt-2">
-            Silent
-            <br />
-            Motion
-          </h1>
-          <p className="text-body-lg text-background/80 mt-4 max-w-md">
-            Elevated essentials for the modern uniform. Designed for movement, built to last.
-          </p>
-          <div className="flex flex-wrap gap-3 mt-8">
-            <Button variant="hero" size="lg" asChild>
-              <Link to="/shop">
-                Shop Collection
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-background/50 text-background hover:bg-background hover:text-foreground"
-              asChild
-            >
-              <Link to="/lookbook">View Lookbook</Link>
-            </Button>
+          {/* Image */}
+          <div className="order-1 lg:order-2 aspect-[3/4] max-h-[70vh] overflow-hidden">
+            <img
+              src={heroKhadi}
+              alt="Model wearing premium khadi clothing"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </div>

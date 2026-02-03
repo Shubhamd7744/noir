@@ -41,9 +41,9 @@ const Header = () => {
           {/* Logo */}
           <Link
             to="/"
-            className="absolute left-1/2 -translate-x-1/2 text-xl md:text-2xl font-medium tracking-tight"
+            className="absolute left-1/2 -translate-x-1/2 font-display text-xl md:text-2xl font-medium tracking-tight"
           >
-            NOIR
+            सूत
           </Link>
 
           {/* Right actions */}
@@ -90,7 +90,7 @@ const Header = () => {
         )}
       >
         <div className="flex items-center justify-between h-14 px-4 border-b border-border">
-          <span className="text-xl font-medium tracking-tight">NOIR</span>
+          <span className="font-display text-xl font-medium tracking-tight">सूत</span>
           <button
             onClick={() => setMobileMenuOpen(false)}
             className="p-2"

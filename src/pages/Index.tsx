@@ -35,18 +35,19 @@ const Index = () => {
           viewAllLink="/shop"
         />
 
-        {/* Editorial strip */}
+        {/* Editorial strip - brand story */}
         <section className="py-16 md:py-24 bg-secondary">
           <div className="container text-center max-w-2xl mx-auto">
-            <span className="text-micro text-muted-foreground">The Approach</span>
-            <h2 className="text-display-md mt-2">
-              Less noise.
+            <span className="text-micro text-sage tracking-[0.2em]">The Philosophy</span>
+            <h2 className="font-display text-display-md mt-4 italic">
+              Slow fashion,
               <br />
-              More intention.
+              lasting comfort.
             </h2>
-            <p className="text-body-lg text-muted-foreground mt-4">
-              Every piece is designed to work harder, last longer, and look better
-              with age. No fast fashion, no disposable trends.
+            <p className="text-body-lg text-muted-foreground mt-6 leading-relaxed">
+              Every piece is handwoven by artisan communities, using traditional 
+              khadi techniques. Better for you, better for the planet—no shortcuts, 
+              no compromise.
             </p>
           </div>
         </section>
