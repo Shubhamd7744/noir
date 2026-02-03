@@ -75,12 +75,12 @@ const ProductCard = ({
         e.preventDefault();
         e.stopPropagation();
         toggle(productNode.id);
-      }} className={cn("absolute top-3 right-3 z-20 p-2 border border-border bg-background/80 backdrop-blur-sm transition-colors", "hover:bg-background")} whileHover={reduceMotion ? undefined : {
+      }} className={cn("absolute top-3 right-3 z-20 p-2 border border-border bg-background/80 backdrop-blur-sm transition-colors hover:bg-background px-[6px] py-[6px] rounded-full shadow-none")} whileHover={reduceMotion ? undefined : {
         scale: 1.06
       }} whileTap={reduceMotion ? undefined : {
         scale: 0.96
       }}>
-          <Heart className={cn("w-4 h-4 text-foreground", wishlisted && "fill-current")} />
+          <Heart className={cn("text-foreground h-[15px] w-[14px] border-0 border-none", wishlisted && "fill-current")} />
         </motion.button>
 
         {/* Skeleton */}
