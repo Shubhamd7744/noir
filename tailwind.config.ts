@@ -55,6 +55,8 @@ export default {
           light: "hsl(var(--stone-light))",
         },
         cream: "hsl(var(--cream))",
+        khadi: "hsl(var(--khadi))",
+        sage: "hsl(var(--sage))",
         success: "hsl(var(--success))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

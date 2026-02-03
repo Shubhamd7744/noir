@@ -59,7 +59,8 @@ const Footer = () => {
           <div>
             <h4 className="text-micro mb-4">Newsletter</h4>
             <p className="text-sm text-muted-foreground mb-4">
-              Early access to drops, exclusive content.
+              Be the first to know about new drops,
+              <br />exclusive offers & sustainable stories.
             </p>
             <form className="flex border border-border">
               <input
@@ -78,7 +79,10 @@ const Footer = () => {
         </div>
 
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <span className="text-xl font-medium tracking-tight">NOIR</span>
+          <div className="flex items-center gap-3">
+            <span className="font-display text-xl font-medium tracking-tight">सूत</span>
+            <span className="text-xs text-muted-foreground">Khadi Essentials</span>
+          </div>
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <Link to="/privacy" className="hover:text-foreground transition-colors">
               Privacy
@@ -86,7 +90,7 @@ const Footer = () => {
             <Link to="/terms" className="hover:text-foreground transition-colors">
               Terms
             </Link>
-            <span>© 2024 NOIR. All rights reserved.</span>
+            <span>© 2024 सूत. All rights reserved.</span>
           </div>
         </div>
       </div>
