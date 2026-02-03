@@ -63,7 +63,7 @@ const Header = () => {
       {/* Mobile menu overlay */}
       <div className={cn("fixed inset-0 z-50 bg-background transition-transform duration-300 md:hidden", mobileMenuOpen ? "translate-x-0" : "-translate-x-full")}>
         <div className="flex items-center justify-between h-14 px-4 border-b border-border">
-          <span className="font-display text-xl font-medium tracking-tight">सूत</span>
+          <span className="font-display text-xl font-medium tracking-tight">Ecoweft</span>
           <button onClick={() => setMobileMenuOpen(false)} className="p-2" aria-label="Close menu">
             <X className="w-5 h-5" />
           </button>
