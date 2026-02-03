@@ -90,7 +90,7 @@ const ProductCard = ({
         opacity: 1
       }} />}
 
-        {firstImage ? reduceMotion ? <img src={firstImage.url} alt={firstImage.altText || productNode.title} className={cn("w-full h-full object-cover transition-opacity duration-500", imageLoaded ? "opacity-100" : "opacity-0")} onLoad={() => setImageLoaded(true)} loading="lazy" /> : <motion.img src={firstImage.url} alt={firstImage.altText || productNode.title} className="w-full h-full object-cover" initial={{
+        {firstImage ? reduceMotion ? <img src={firstImage.url} alt={firstImage.altText || productNode.title} className={cn("w-full h-full object-cover transition-opacity duration-500 rounded-xl shadow-none", imageLoaded ? "opacity-100" : "opacity-0")} onLoad={() => setImageLoaded(true)} loading="lazy" /> : <motion.img src={firstImage.url} alt={firstImage.altText || productNode.title} className="w-full h-full object-cover" initial={{
         opacity: 0,
         scale: 1.01
       }} animate={{
