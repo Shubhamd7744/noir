@@ -5,8 +5,12 @@ import HeroSection from "@/components/home/HeroSection";
 import ProductGrid from "@/components/home/ProductGrid";
 import CategorySection from "@/components/home/CategorySection";
 import PageTransition from "@/components/motion/PageTransition";
+import { useCartSync } from "@/hooks/useCartSync";
 
 const Index = () => {
+  // Sync cart with Shopify when user returns from checkout
+  useCartSync();
+
   return (
     <PageTransition className="min-h-screen bg-background">
       <Header />
@@ -18,19 +22,17 @@ const Index = () => {
         <ProductGrid
           title="New Arrivals"
           subtitle="Just Dropped"
-          filter="new"
           limit={4}
-          viewAllLink="/shop?new=true"
+          viewAllLink="/shop"
         />
 
         <CategorySection />
 
         <ProductGrid
-          title="Trending Now"
-          subtitle="Most Wanted"
-          filter="trending"
+          title="Featured Collection"
+          subtitle="Editor's Picks"
           limit={4}
-          viewAllLink="/shop?trending=true"
+          viewAllLink="/shop"
         />
 
         {/* Editorial strip */}
@@ -51,7 +53,6 @@ const Index = () => {
 
         <ProductGrid
           title="Shop All"
-          filter="all"
           limit={8}
           showViewAll={true}
           viewAllLink="/shop"

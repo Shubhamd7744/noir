@@ -1,35 +1,28 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import ProductCard from "@/components/product/ProductCard";
-import { products } from "@/data/products";
+import { useShopifyProducts } from "@/hooks/useShopifyProducts";
 import { motion, useReducedMotion } from "framer-motion";
 
 interface ProductGridProps {
   title: string;
   subtitle?: string;
-  filter?: "new" | "trending" | "all";
   limit?: number;
   showViewAll?: boolean;
   viewAllLink?: string;
+  searchQuery?: string;
 }
 
 const ProductGrid = ({
   title,
   subtitle,
-  filter = "all",
   limit = 4,
   showViewAll = true,
   viewAllLink = "/shop",
+  searchQuery,
 }: ProductGridProps) => {
   const reduceMotion = useReducedMotion();
-
-  const filteredProducts = products
-    .filter((p) => {
-      if (filter === "new") return p.isNew;
-      if (filter === "trending") return p.isTrending;
-      return true;
-    })
-    .slice(0, limit);
+  const { data: products, isLoading, error } = useShopifyProducts(limit, searchQuery);
 
   const containerVariants = {
     hidden: { opacity: 1 },
@@ -59,24 +52,49 @@ const ProductGrid = ({
         )}
       </div>
 
-      {reduceMotion ? (
+      {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {filteredProducts.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
+          {Array.from({ length: limit }).map((_, idx) => (
+            <div key={idx} className="space-y-3">
+              <div className="aspect-product skeleton-shimmer bg-muted" />
+              <div className="space-y-2">
+                <div className="h-4 w-3/4 skeleton-shimmer bg-muted rounded" />
+                <div className="h-3 w-1/2 skeleton-shimmer bg-muted rounded" />
+              </div>
+            </div>
           ))}
         </div>
+      ) : error ? (
+        <div className="text-center py-20">
+          <p className="text-muted-foreground">Failed to load products</p>
+        </div>
+      ) : !products || products.length === 0 ? (
+        <div className="text-center py-20">
+          <p className="text-muted-foreground">No products found</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Add products to your store to see them here.
+          </p>
+        </div>
       ) : (
-        <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {filteredProducts.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
-          ))}
-        </motion.div>
+        reduceMotion ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {products.map((product, index) => (
+              <ProductCard key={product.node.id} product={product} index={index} />
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            {products.map((product, index) => (
+              <ProductCard key={product.node.id} product={product} index={index} />
+            ))}
+          </motion.div>
+        )
       )}
     </section>
   );

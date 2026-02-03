@@ -1,14 +1,16 @@
 import { Link } from "react-router-dom";
 import { Heart, Menu, Search, ShoppingBag, X, User } from "lucide-react";
 import { useState } from "react";
-import { useCart } from "@/context/CartContext";
+import { useCartStore } from "@/stores/cartStore";
 import { useWishlist } from "@/context/WishlistContext";
 import { cn } from "@/lib/utils";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { totalItems, openCart } = useCart();
+  const { totalItems, openCart } = useCartStore();
   const { total: wishlistTotal } = useWishlist();
+  
+  const cartItemCount = totalItems();
 
   return (
     <>
@@ -26,19 +28,13 @@ const Header = () => {
           {/* Desktop navigation */}
           <nav className="hidden md:flex items-center gap-8">
             <Link
-              to="/shop?category=women"
+              to="/shop"
               className="text-caption hover-underline"
             >
-              Women
+              Shop
             </Link>
-            <Link
-              to="/shop?category=men"
-              className="text-caption hover-underline"
-            >
-              Men
-            </Link>
-            <Link to="/shop" className="text-caption hover-underline">
-              All
+            <Link to="/wishlist" className="text-caption hover-underline">
+              Wishlist
             </Link>
           </nav>
 
@@ -76,9 +72,9 @@ const Header = () => {
               aria-label="Open cart"
             >
               <ShoppingBag className="w-5 h-5" />
-              {totalItems > 0 && (
+              {cartItemCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-foreground text-background text-[10px] font-medium flex items-center justify-center">
-                  {totalItems}
+                  {cartItemCount}
                 </span>
               )}
             </button>
@@ -105,25 +101,11 @@ const Header = () => {
         </div>
         <nav className="flex flex-col p-6 gap-6">
           <Link
-            to="/shop?category=women"
-            className="text-2xl font-medium"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Women
-          </Link>
-          <Link
-            to="/shop?category=men"
-            className="text-2xl font-medium"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Men
-          </Link>
-          <Link
             to="/shop"
             className="text-2xl font-medium"
             onClick={() => setMobileMenuOpen(false)}
           >
-            All Products
+            Shop All
           </Link>
           <div className="h-px bg-border my-4" />
           <Link

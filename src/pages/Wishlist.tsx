@@ -5,12 +5,15 @@ import PageTransition from "@/components/motion/PageTransition";
 import ProductCard from "@/components/product/ProductCard";
 import { Button } from "@/components/ui/button";
 import { useWishlist } from "@/context/WishlistContext";
-import { products } from "@/data/products";
+import { useShopifyProducts } from "@/hooks/useShopifyProducts";
 import { Link } from "react-router-dom";
 
 const Wishlist = () => {
   const { ids, clear } = useWishlist();
-  const wishlistedProducts = products.filter((p) => ids.includes(p.id));
+  const { data: products, isLoading } = useShopifyProducts(100);
+
+  // Filter products that are in the wishlist
+  const wishlistedProducts = products?.filter((p) => ids.includes(p.node.id)) || [];
 
   return (
     <PageTransition className="min-h-screen bg-background">
@@ -35,7 +38,19 @@ const Wishlist = () => {
         </div>
 
         <div className="container pb-16">
-          {wishlistedProducts.length === 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="space-y-3">
+                  <div className="aspect-product skeleton-shimmer bg-muted" />
+                  <div className="space-y-2">
+                    <div className="h-4 w-3/4 skeleton-shimmer bg-muted rounded" />
+                    <div className="h-3 w-1/2 skeleton-shimmer bg-muted rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : wishlistedProducts.length === 0 ? (
             <div className="border border-border p-8 md:p-12 text-center">
               <p className="text-muted-foreground">No favorites yet.</p>
               <Button asChild variant="cart" size="lg" className="mt-6">
@@ -45,7 +60,7 @@ const Wishlist = () => {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {wishlistedProducts.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
+                <ProductCard key={product.node.id} product={product} index={index} />
               ))}
             </div>
           )}
