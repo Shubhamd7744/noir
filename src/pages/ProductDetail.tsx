@@ -1,12 +1,12 @@
 import { useParams, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { ChevronLeft, Minus, Plus, Truck, RotateCcw, Shield } from "lucide-react";
+import { useState } from "react";
+import { ChevronLeft, Truck, RotateCcw, Shield, Loader2, ShoppingBag } from "lucide-react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { Button } from "@/components/ui/button";
-import { getProductById, products } from "@/data/products";
-import { useCart } from "@/context/CartContext";
+import { useShopifyProduct, useShopifyProducts } from "@/hooks/useShopifyProducts";
+import { useCartStore } from "@/stores/cartStore";
 import ProductCard from "@/components/product/ProductCard";
 import { cn } from "@/lib/utils";
 import {
@@ -17,37 +17,92 @@ import {
 } from "@/components/ui/accordion";
 import PageTransition from "@/components/motion/PageTransition";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { toast } from "sonner";
 
-const ProductDetail = () => {
-  const { id } = useParams();
-  const product = getProductById(id || "");
-  const { addItem } = useCart();
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+const ShopifyProductDetail = () => {
+  const { handle } = useParams();
+  const { data: product, isLoading: productLoading, error } = useShopifyProduct(handle);
+  const { data: relatedProducts } = useShopifyProducts(4);
+  const { addItem, isLoading: cartLoading } = useCartStore();
+  
+  const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mainImageLoaded, setMainImageLoaded] = useState(false);
   const reduceMotion = useReducedMotion();
 
-  useEffect(() => {
+  // Reset image loading state when image changes
+  const handleImageChange = (index: number) => {
     setMainImageLoaded(false);
-  }, [currentImageIndex]);
+    setCurrentImageIndex(index);
+  };
 
-  if (!product) {
+  if (productLoading) {
     return (
-      <PageTransition className="min-h-screen flex items-center justify-center">
-        <p>Product not found</p>
+      <PageTransition className="min-h-screen bg-background">
+        <Header />
+        <CartDrawer />
+        <main className="pt-14 md:pt-16">
+          <div className="container py-8">
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+              <div className="aspect-product skeleton-shimmer bg-muted" />
+              <div className="space-y-6">
+                <div className="h-8 w-3/4 skeleton-shimmer bg-muted rounded" />
+                <div className="h-6 w-1/4 skeleton-shimmer bg-muted rounded" />
+                <div className="h-32 skeleton-shimmer bg-muted rounded" />
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
       </PageTransition>
     );
   }
 
-  const handleAddToCart = () => {
-    if (selectedSize) {
-      addItem(product, selectedSize);
+  if (error || !product) {
+    return (
+      <PageTransition className="min-h-screen bg-background flex items-center justify-center">
+        <Header />
+        <div className="text-center">
+          <p className="text-muted-foreground mb-4">Product not found</p>
+          <Button variant="outline" asChild>
+            <Link to="/shop">Back to Shop</Link>
+          </Button>
+        </div>
+        <Footer />
+      </PageTransition>
+    );
+  }
+
+  const images = product.images.edges;
+  const variants = product.variants.edges;
+  const options = product.options;
+  const currentImage = images[currentImageIndex]?.node;
+  
+  const selectedVariantData = selectedVariant 
+    ? variants.find(v => v.node.id === selectedVariant)?.node
+    : variants[0]?.node;
+
+  const handleAddToCart = async () => {
+    if (!selectedVariantData) {
+      toast.error("Please select options");
+      return;
     }
+
+    await addItem({
+      product: { node: product },
+      variantId: selectedVariantData.id,
+      variantTitle: selectedVariantData.title,
+      price: selectedVariantData.price,
+      quantity: 1,
+      selectedOptions: selectedVariantData.selectedOptions || [],
+    });
+
+    toast.success("Added to bag", {
+      description: product.title,
+    });
   };
 
-  const relatedProducts = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  const filteredRelated = relatedProducts?.filter(p => p.node.handle !== handle).slice(0, 4) || [];
 
   return (
     <PageTransition className="min-h-screen bg-background">
@@ -78,40 +133,47 @@ const ProductDetail = () => {
                     animate={{ opacity: 1 }}
                   />
                 )}
-                {reduceMotion ? (
-                  <img
-                    src={product.images[currentImageIndex]}
-                    alt={product.name}
-                    className={cn(
-                      "w-full h-full object-cover transition-opacity duration-500",
-                      mainImageLoaded ? "opacity-100" : "opacity-0"
-                    )}
-                    onLoad={() => setMainImageLoaded(true)}
-                  />
-                ) : (
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.img
-                      key={product.images[currentImageIndex]}
-                      src={product.images[currentImageIndex]}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                      initial={{ opacity: 0, scale: 1.01 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                {currentImage ? (
+                  reduceMotion ? (
+                    <img
+                      src={currentImage.url}
+                      alt={currentImage.altText || product.title}
+                      className={cn(
+                        "w-full h-full object-cover transition-opacity duration-500",
+                        mainImageLoaded ? "opacity-100" : "opacity-0"
+                      )}
                       onLoad={() => setMainImageLoaded(true)}
                     />
-                  </AnimatePresence>
+                  ) : (
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.img
+                        key={currentImage.url}
+                        src={currentImage.url}
+                        alt={currentImage.altText || product.title}
+                        className="w-full h-full object-cover"
+                        initial={{ opacity: 0, scale: 1.01 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                        onLoad={() => setMainImageLoaded(true)}
+                      />
+                    </AnimatePresence>
+                  )
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    No Image
+                  </div>
                 )}
               </div>
-              {product.images.length > 1 && (
-                <div className="flex gap-2">
-                  {product.images.map((img, idx) => (
+              
+              {images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {images.map((img, idx) => (
                     <motion.button
                       key={idx}
-                      onClick={() => setCurrentImageIndex(idx)}
+                      onClick={() => handleImageChange(idx)}
                       className={cn(
-                        "w-16 h-20 bg-muted overflow-hidden border-2 transition-colors",
+                        "w-16 h-20 bg-muted overflow-hidden border-2 transition-colors flex-shrink-0",
                         currentImageIndex === idx
                           ? "border-foreground"
                           : "border-transparent"
@@ -120,7 +182,7 @@ const ProductDetail = () => {
                       whileTap={reduceMotion ? undefined : { scale: 0.98 }}
                     >
                       <img
-                        src={img}
+                        src={img.node.url}
                         alt=""
                         className="w-full h-full object-cover"
                       />
@@ -135,72 +197,86 @@ const ProductDetail = () => {
               <div className="space-y-6">
                 {/* Title & Price */}
                 <div>
-                  {product.isNew && (
+                  {product.tags?.includes('new') && (
                     <span className="text-micro text-muted-foreground">New</span>
                   )}
-                  <h1 className="text-display-md mt-1">{product.name}</h1>
+                  <h1 className="text-display-md mt-1">{product.title}</h1>
                   <div className="flex items-center gap-3 mt-2">
-                    <span className="text-xl">${product.price}</span>
-                    {product.originalPrice && (
-                      <span className="text-xl text-muted-foreground line-through">
-                        ${product.originalPrice}
-                      </span>
-                    )}
+                    <span className="text-xl">
+                      {selectedVariantData?.price.currencyCode} {parseFloat(selectedVariantData?.price.amount || '0').toFixed(2)}
+                    </span>
                   </div>
                 </div>
 
-                {/* Color */}
-                <div>
-                  <p className="text-sm">
-                    <span className="text-muted-foreground">Color:</span>{" "}
-                    {product.color}
-                  </p>
-                </div>
-
-                {/* Size selector */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-sm font-medium">Select Size</span>
-                    <button className="text-sm text-muted-foreground hover:text-foreground transition-colors underline">
-                      Size Guide
-                    </button>
+                {/* Vendor */}
+                {product.vendor && (
+                  <div>
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">By:</span>{" "}
+                      {product.vendor}
+                    </p>
                   </div>
-                  <div className="grid grid-cols-5 gap-2">
-                    {product.sizes.map((size) => (
-                      <motion.button
-                        key={size.name}
-                        onClick={() => size.inStock && setSelectedSize(size.name)}
-                        disabled={!size.inStock}
-                        className={cn(
-                          "size-option",
-                          selectedSize === size.name && "selected",
-                          !size.inStock && "out-of-stock"
-                        )}
-                        whileHover={
-                          reduceMotion || !size.inStock
-                            ? undefined
-                            : { scale: 1.03, y: -1 }
-                        }
-                        whileTap={
-                          reduceMotion || !size.inStock
-                            ? undefined
-                            : { scale: 0.98 }
-                        }
-                      >
-                        {size.name}
-                      </motion.button>
+                )}
+
+                {/* Variant selector */}
+                {options.length > 0 && options[0].name !== 'Title' && (
+                  <div className="space-y-4">
+                    {options.map((option) => (
+                      <div key={option.name}>
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-sm font-medium">Select {option.name}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {option.values.map((value) => {
+                            // Find variant with this option value
+                            const variantWithOption = variants.find(v => 
+                              v.node.selectedOptions?.some(opt => 
+                                opt.name === option.name && opt.value === value
+                              )
+                            );
+                            const isAvailable = variantWithOption?.node.availableForSale;
+                            const isSelected = selectedVariantData?.selectedOptions?.some(
+                              opt => opt.name === option.name && opt.value === value
+                            );
+
+                            return (
+                              <motion.button
+                                key={value}
+                                onClick={() => {
+                                  if (variantWithOption && isAvailable) {
+                                    setSelectedVariant(variantWithOption.node.id);
+                                  }
+                                }}
+                                disabled={!isAvailable}
+                                className={cn(
+                                  "size-option",
+                                  isSelected && "selected",
+                                  !isAvailable && "out-of-stock"
+                                )}
+                                whileHover={
+                                  reduceMotion || !isAvailable
+                                    ? undefined
+                                    : { scale: 1.03, y: -1 }
+                                }
+                                whileTap={
+                                  reduceMotion || !isAvailable
+                                    ? undefined
+                                    : { scale: 0.98 }
+                                }
+                              >
+                                {value}
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     ))}
                   </div>
-                  {product.mostBoughtSize && (
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Most bought size: {product.mostBoughtSize}
-                    </p>
-                  )}
-                </div>
+                )}
 
-                {/* Stock indicator */}
-                {product.stock <= 10 && product.stock > 0 && (
-                  <p className="scarcity-badge">Only {product.stock} left in stock</p>
+                {/* Availability */}
+                {!selectedVariantData?.availableForSale && (
+                  <p className="text-destructive text-sm font-medium">Currently out of stock</p>
                 )}
 
                 {/* Add to cart */}
@@ -208,9 +284,16 @@ const ProductDetail = () => {
                   variant="cart"
                   size="full"
                   onClick={handleAddToCart}
-                  disabled={!selectedSize}
+                  disabled={!selectedVariantData?.availableForSale || cartLoading}
                 >
-                  {selectedSize ? "Add to Bag" : "Select a Size"}
+                  {cartLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <ShoppingBag className="w-4 h-4 mr-2" />
+                      {selectedVariantData?.availableForSale ? "Add to Bag" : "Out of Stock"}
+                    </>
+                  )}
                 </Button>
 
                 {/* Trust signals */}
@@ -236,37 +319,20 @@ const ProductDetail = () => {
                       Description
                     </AccordionTrigger>
                     <AccordionContent className="text-sm text-muted-foreground">
-                      {product.description}
+                      {product.description || "No description available."}
                     </AccordionContent>
                   </AccordionItem>
-                  {product.fabric && (
-                    <AccordionItem value="fabric">
+                  {product.productType && (
+                    <AccordionItem value="details">
                       <AccordionTrigger className="text-sm font-medium">
-                        Fabric & Fit
+                        Product Details
                       </AccordionTrigger>
                       <AccordionContent className="text-sm text-muted-foreground">
-                        <p>
-                          <strong>Fabric:</strong> {product.fabric}
-                        </p>
-                        {product.fit && (
-                          <p className="mt-1">
-                            <strong>Fit:</strong> {product.fit}
-                          </p>
+                        <p><strong>Type:</strong> {product.productType}</p>
+                        {product.vendor && <p className="mt-1"><strong>Vendor:</strong> {product.vendor}</p>}
+                        {product.tags?.length > 0 && (
+                          <p className="mt-1"><strong>Tags:</strong> {product.tags.join(', ')}</p>
                         )}
-                      </AccordionContent>
-                    </AccordionItem>
-                  )}
-                  {product.care && (
-                    <AccordionItem value="care">
-                      <AccordionTrigger className="text-sm font-medium">
-                        Care Instructions
-                      </AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground">
-                        <ul className="list-disc list-inside space-y-1">
-                          {product.care.map((instruction, idx) => (
-                            <li key={idx}>{instruction}</li>
-                          ))}
-                        </ul>
                       </AccordionContent>
                     </AccordionItem>
                   )}
@@ -277,12 +343,12 @@ const ProductDetail = () => {
         </div>
 
         {/* Related products */}
-        {relatedProducts.length > 0 && (
+        {filteredRelated.length > 0 && (
           <section className="container py-12 border-t border-border">
             <h2 className="text-headline mb-8">You May Also Like</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {relatedProducts.map((p, idx) => (
-                <ProductCard key={p.id} product={p} index={idx} />
+              {filteredRelated.map((p, idx) => (
+                <ProductCard key={p.node.id} product={p} index={idx} />
               ))}
             </div>
           </section>
@@ -294,4 +360,4 @@ const ProductDetail = () => {
   );
 };
 
-export default ProductDetail;
+export default ShopifyProductDetail;
