@@ -68,15 +68,30 @@ const Header = () => {
             <X className="w-5 h-5" />
           </button>
         </div>
-        <nav className="flex flex-col p-6 gap-6">
+        <nav className="flex flex-col p-6 gap-4">
           <Link to="/shop" className="text-2xl font-medium" onClick={() => setMobileMenuOpen(false)}>
             Shop All
           </Link>
-          <div className="h-px bg-border my-4" />
-          <Link to="/wishlist" className="text-2xl font-medium" onClick={() => setMobileMenuOpen(false)}>
+          <Link to="/shop?category=top" className="text-2xl font-medium" onClick={() => setMobileMenuOpen(false)}>
+            Top
+          </Link>
+          <Link to="/shop?category=bottom" className="text-2xl font-medium" onClick={() => setMobileMenuOpen(false)}>
+            Bottom
+          </Link>
+          <div className="h-px bg-border my-2" />
+          <Link to="/shop?category=new" className="text-xl font-medium" onClick={() => setMobileMenuOpen(false)}>
+            New Arrivals
+          </Link>
+          <Link to="/shop?category=bestsellers" className="text-xl font-medium" onClick={() => setMobileMenuOpen(false)}>
+            Bestsellers
+          </Link>
+          <Link to="/shop?category=sale" className="text-xl font-medium" onClick={() => setMobileMenuOpen(false)}>
+            Sale
+          </Link>
+          <div className="h-px bg-border my-2" />
+          <Link to="/wishlist" className="text-lg text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
             Wishlist
           </Link>
-          <div className="h-px bg-border" />
           <Link to="/account" className="text-lg text-muted-foreground" onClick={() => setMobileMenuOpen(false)}>
             Account
           </Link>
